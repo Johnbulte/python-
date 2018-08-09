@@ -1,0 +1,915 @@
+2018年7月2日,星期一
+--------------------------------------------------------------------------------
+1.MySQL概述
+      1.什么是数据库？
+            数据库是一个存储数据的仓库
+    2.都有哪些公司在用数据库(金融，游戏，购物，论坛)
+    3.提供数据库服务的软件有哪些？
+        1.软件分类
+            MySQL、sql_server、Oracle、Mariadb、DB2、MongoDB....
+        2.如何选择哪个数据库？
+            1.是否开源(开源：MySQL，Mariadb，MongoDB，商业软件：Oracle，DB2、SQL_Server)
+4.是否跨平台
+    跨平台：
+    不跨平台：(SQL_Server)
+5.商业软件：政府部门、金融机构
+--------------------------------------------------------------------------------
+2.MySQL的特点：
+    1.关系型数据库(特点：1.数据以行和列的形式存储，2.表中每一行叫一条记录，3.表中的每
+    一列叫一个字段，4.表和表之间的逻辑关联叫关系)
+    2.示例：
+        1、关系型数据库的存储
+            表1学生信息表
+                姓名  年龄  班级
+                 *     *     *
+                 2、表2班级信息表
+                 *     *     *
+      3.非关系型数据库的存储：(特点：以键值对的方式存储)
+      4、跨平台
+可以在Unix、linux、windows上运行数据库服务
+       5、支持多种语言
+Python、java、PHP.....
+------------数据库软件、数据库、数据仓库的区别---------------
+1.数据库软件
+    是一种软件，可以看得见，可操作，来实现数据库的逻辑功能
+2.数据库
+    是一种逻辑概念，就是用来存放数据的仓库，通过数据库软件来实现，侧重存储
+3.数据仓库
+    数据仓库主要用于数据挖掘和数据分析
+--------------------------------------------------------------------------------
+4、启动和连接MySQL服务
+    1.服务端启动
+        sudo /etc/init.d/MySQL start  #启动
+        sudo /etc/init.d/MySQL stop   #关闭
+        sudo /etc/init.d/MySQL restart   #重启
+        sudo /etc/init.d/MySQL status   #查看当前状态
+        sudo /etc/init.d/MySQL reload   #重新加载配置文件
+    2.客户端连接
+        1.命令格式
+            mysql -h 主机地址(数据库的ip地址) -u(用户名)  -p(密码)
+        (本地登录可使用)
+            mysql -hlocalhost -uroot -p123456(可不输入密码使用暗文登录)
+        2.基本的SQL命令
+            1.使用规则
+                1、每条字符命令必须以；结尾
+                2、SQL命令不区分字符字母大小
+                3、使用\c终止当前命令的执行
+        3.库的管理
+            1、库的基本操作
+                1、查看已有的库
+                    show databases;
+                2、创建一个库
+                    create database 库名 [character set utf8]  指定字符集为utf8;
+                3、查看创建库的语句(字符集)
+                    show create database 库名;
+                4、查看当前所在库
+                    select database(); #默认空白库
+                5、切换库
+                    use 库名;
+                6、查看库中已有表
+                    show tables;
+                7、删除库
+                    drop database 库名;
+        4.库的命名规则
+            1、数字、字母、下划线(_)，但是不能纯数字
+            2、库名区分字母大小写
+            3、不能使用特殊字符和MySQL关键字
+练习：
+    1、创建库testdb,指定字符集为utf8
+    2、进入库testdb
+    3、查看当前所在的库
+    4、创建库testdb2，指定字符集为latin1
+    5、进入库testdb2
+    6、查看testdb2的字符集
+    7、删除库1和2
+            -------------------------命令------------------------------
+mysql>:create database testdb character set utf8;
+mysql>:use testdb;
+mysql>:
+mysql>:create database testdb2;
+mysql>:use testdb2;
+mysql>:show create database testdb2;
+mysql>:drop database testdb[testdb2];
+
+--------------------------------------------------------------------------------
+
+表的管理
+    1、表的基本操作
+        1.创建表(指定字符集)
+            create table 表名(
+            字符串1(char(宽度))，数据类型(int(宽度))，字段名2，数据类型，....
+            );
+        2.查看创建表的语句(字符集)
+            show create table 表名;
+        3.查看表结构
+            desc 表名;
+        4.删除表
+            drop table 表名;
+练习：
+    1、创建库Python1
+    2、在Python1库中创建表pymysql，并指定字符集为utf8字段有三个：id name age 数据类型自己定义(比如说:char(20)、int)
+    3、查看创建表pymysql的语句
+    4、查看pymysql的表结构
+    5、删除表pymysql
+    6、删除库python1
+4.注意
+    1、所有的数据都是以文件的形式存放在数据库目录
+    /var/lib/mysql
+
+--------------------------------------------------------------------------------
+
+表记录的管理
+    1、在表中插入记录
+        1.insert into 表名 values(值1),(值2),(值3).....;#按顺序赋值
+        2.insert into 表名(字段名，字段名2......)  values(值1),(值2)......
+    2、查询表记录
+        1.select * from 表名 [where 条件];#[]可有可无
+        2.select 字段名1,字段名2,....... from 表名 [where 条件]
+--------------------------------------------------------------------------------
+
+更改库的默认字符集
+    1、方法：
+        通过更改mysql配置文件来实现
+    2、步骤
+        1、获取root权限
+            sudo -i
+        2、备份配置文件
+            cd /etc/mysql/mysql.conf.d/
+            cp mysqld.cnf mysqld.cnf.bak
+        3、更改mysqld.cnf配置文件
+            [mysqld]
+            character_set_server=utf8
+        4、重启mysql服务
+            sudo /etc/init.d/mysql restart
+--------------------------------------------------------------------------------
+
+客户端把数据存储到数据库服务器上的过程
+    1、先连接到数据库服务器
+    2、选择库
+    3、创建或修改表
+    4、断开与数据库连接   exit;quit;或\q;
+
+--------------------------------------------------------------------------------
+
+数据类型
+    1、数值类型
+        整型(有符号和无符号unsigned)
+            1)int 大整型(4个字节)
+                可以存储0~2**32-1个数(42亿)
+            2)tinyint  微小整型(1字节)
+                有符号
+                无符号(unsigned)
+                  age tinyint unsigned,
+                  0~255个数
+            3)bigint 极大整型(8个字节)
+例：
+    create table t3(id int,name char(15),age tinyint unsigned,phone bigint);
+        2、浮点型
+            1、float(4个字节，最多显示7个有效位)
+                用法：
+                    字段名 float(m,n)   m:总位数，n:小数位数
+                    float(5,2) #整数位为3位 -999.99~999.99
+            2、decimal(最多占用28个有效位)
+                用法：
+                    和上面一样
+                cunc空间(整数部分和小数部分分开存储)
+                规则：将9的倍数包装成4个字节
+                    余数     字节
+                    1~2       1
+                    2~3       2
+                    5~6       3
+                    7~8       4
+
+    2、字符类型
+        1)char(固定长度)
+            char(宽度值1~255)
+        2)varchar(变长)
+        3)char和varchar的特点
+            1、char浪费存储空间，存储性能比较高
+            2、varchar：节省存储空间，性能比较低
+        4)text/longtext(4G)
+
+--------------------------------------------------------------------------------
+
+数值类型的宽度和字符类型的宽度区别：
+    1、数值类型宽度为显示宽度，只用于select查询显示，和占用存储空间大小无关，用zerofill来显示效果
+       id int(3) zerofill,
+    2、字符类型的宽度超过则无法存储
+
+    3、枚举类型
+        1.定义
+            字段值只能在列举的范围内选择
+        2.字段名 enum([单选]值1,值2,.....)
+          字段名 set([多选]'值1,值2,......'')
+          插入记录的时候:"值1,值2,值3"
+--------------------------------------------------------------------------------
+
+    4、日期时间类型
+        1/date：日期 'YYYY-MM-DD'
+        2/time：时间 "HH:MM:SS"
+        3/datetime:日期时间"YYYY-MM-DD HH:MM:SS"
+        4/timestamp:日期时间"YYYY-MM-DD HH:MM:SS"
+          字符串 datetime(不能为空),字符串 timestamp(默认为系统时间)
+            1/datetime不给值，默认返回空值
+            2/timestamp：不给值默认返回当前时间
+
+
+    练习：
+        创建一个库studb2，并在studb2中创建表tab2，字段要求如下
+            id 整数型
+            name 变长，宽度为20
+            class 定长，宽度为7
+            age 微小整型，不能输入负数
+            height 浮点型，小数位为2位
+        查看tab2表结构
+        查看tab2字符集
+        在tab2中插入2条完整记录
+        查询所有表记录
+        在tab2中的name和height两个字段插入两条记录
+        查询所有学生的姓名
+        查询身高大于160的学生
+
+
+--------------------------------------------------------------------------------
+
+表字段操作：
+    1、语法：alter table 表名 执行动作;
+    2、添加字段
+        alter table 表名 add 字段名 数据类型;(末尾)
+        alter table 表名 add 字段名 数据类型 first(第一个);
+        alter table 表名 add 字段名 数据类型 after 字段名(指定);
+    3、删除字段(drop)
+        alter table 表名 drop 字段名;
+    4、修改字段数据类型(modify)
+        alter table 表名 modify 字段名 新数据类型;
+
+练习：
+    1、mysql中的数据类型有？
+
+    2、关系型数据库的核心内容是 关系 即 二维表
+    3、char和varchar的区别，各自的特点
+
+    4、
+        1、创建一个库school
+            create database school;
+        2、在库中创建一个表students来存储学生信息
+            create table students;
+        id显示宽度为3，位数不够用0填充
+            name、age(要求不能输入负数)、score(浮点float、性别(单选)
+                create table students(id int(3) zerofill,name char(20),age tinyint unsigned,score float(5,2),sex enum('boy','girl'));
+        3、查看students的表结构
+            desc students;
+        4、在students中添加一个字段height，加在age字段之后
+            insert into students(id,name,age,heigth,score,sex) values(1,'zhangsanfeng',20,175.30,100,'boy');
+        5、将score字段的数据类型改为decimal
+
+        6、在students插入三条完整记录
+        7、查看所有学生的姓名和成绩
+            select score from students;
+        8、查看没有及格的学生的信息
+            select from * students where score<60;
+
+-------------------------------日期时间函数--------------------------------------
+日期时间函数：
+    1.now()   #返回服务器当前时间
+    2.curdate() #返回当前日期
+    3.curtime() #返回当前时间
+    语法：
+      select now();
+      在命令行内可直接调用
+
+日期时间运算：
+    select * from 表名 where 字段名 运算符 (时间 - interval 时间间隔单位);
+
+时间间隔单位：
+    1day|2 hour|1 minute|1 year|3 month
+  示例：
+    select * from t1 where 字段名 > (now()-interval 1 day);
+  【多种条件可以使用and 进行连接 如: where id>3 and id<6】
+
+练习：
+  1.创建库studb2
+        ·create database studb2;
+  2.在库中创建表studinfo，字段有3个:
+      name/age/phone char(11)/
+        ·use studb2
+        ·create table stuinfo(name varchar(15),age tinyint,phone char(11));
+  3.查看表的结构
+        ·desc stuinfo;
+  4.在表中第一列添加一个id字段
+        ·alter table studinfo add id int(10) first;
+  5.把phone的数据类型改为bigint
+        ·alter table studinfo modify phone bigint;
+  6.在表中最后一列添加一个字段:注册时间register，数据类型类型为:timestamp
+        ·alter table studinfo add register timestamp;
+  7.在表中id name age phone四个字段插入一条记录
+        ·用insert插入此处略
+  8.查看五分钟内的注册信息
+        ·select * from .......略
+
+
+--------------------------------修改字段名--------------------------------------
+
+alter table 表名 change 原字段名 新字段名 数据类型;
+--------------------------------------------------------------------------------
+表记录管理
+1.删除表记录
+  1.delete from 表名 where 条件;
+  2.注意：
+    delete 语句后没有加where条件，表中所有记录全部清除
+  3.更新表记录(update)
+    1.update 表名 set 字段1=值1，字段2=值2,...where 条件;
+    2.注意
+        必须加where条件语句
+练习：
+    1.查找所有蜀国人信息
+        select * from hero where country='蜀国';
+    2.把id为2的英雄名字改为司马懿，国家改为魏国
+        update hero set name="司马懿",country="魏国" where id=2;
+    3.查找女英雄的姓名/性别和国家
+        select name,sex,country from hero where sex="女";
+    4.删除所有魏国的英雄
+        delete from hero where country="魏国";
+    5.查找所有蜀国男英雄的信息
+        select * from hero where country="蜀国" and sex="男";
+    6.删除所有的英雄
+        delete from hero;
+--------------------------------------------------------------------------------
+MySQL运算符操作：
+    -查询，修改，删除-
+    1.数值比较&字符比较&逻辑比较
+        数值：
+            =/!=/>/>=/</<=
+        字符：
+            =/!=
+        逻辑：
+            and/or
+练习：
+    1.找出攻击力高于150找出攻击力高于150的蜀国英雄的名字和攻击值
+        select name,gongji from sanguo where gongji>150 and country='蜀国';
+    2.将赵云d攻击力改为666，防御力改为88
+        update sanguo set gongji=666,fangyu=88 where name="赵云666";
+    3.查找蜀国和魏国的英雄信息
+        select * from sanguo where country="蜀国" or country="魏国";
+    4.将吴国英雄中攻击值为100的英雄的攻击值设为100，防御力设置为60
+        update sanguo set gongji=100,fangyu=60, where country="吴国" and gongji=100;
+--------------------------------------------------------------------------------
+
+匹配空和非空
+    1.空：is null
+    2.非空:is not null
+    3.注意：
+        空值(null)必须要用is 或者 is not 去匹配
+        "":空字符串，只能用 = 或者 !=去匹配
+--------------------------------------------------------------------------------
+模糊比较：
+    1.where 字段名 like 表达式
+    2.表达式：
+        1._:匹配单个字符
+        2.%:匹配0到多个字符
+    3.示例：
+        1.名字中至少有两个字符的记录"_%_"
+        2.匹配名字为非空null的记录 "%"
+        3.匹配名字中值有三个字符的记录"___"
+        4.匹配姓赵的记录   "赵%"
+
+--------------------------------------------------------------------------------
+sql查询：
+    1)总结
+        3.select...聚合函数 from 表名
+        1.where ....
+        2.group by...
+        4.having...
+        5.order by....
+        6.limit.....
+        (序号为执行顺序)
+--------------------------------------------------------------------------------
+
+  order by
+      1.给查询的结果进行排序
+      2.order by 字段名 排序方式
+          1.升序(默认)
+          2.降序(DESC)
+  练习：
+      1.将蜀国的英雄按照攻击值从高到低排序
+        select * from sanguo where country="蜀国" order by gongji DESC;
+      2.将魏蜀两国的男英雄中名字为三个的英雄按防御值升序排列
+        select * from sanguo where name like "___" and (country="魏国" or country="蜀国") and sex="男" order by fangyu;
+  limit(永远在sql语句最后写)
+      1.limit n ---> 显示n条记录
+      2.limit m,n
+          m:表示从m+1条记录开始显示
+          n:表示显示n条
+        limit 2,4:显示第3.4.5.6四条记录
+示例：
+    在蜀国英雄中查找攻击值前三名且名字不能为null的英雄的姓名，攻击值和国家
+      select name,gongji,country from sanguo
+      where country="蜀国" and name is not Null
+      order by gongji DESC limit 3;
+    在蜀国英雄中，查找防御值倒数第2名至倒数第四名的英雄信息
+      select * from sanguo where country="蜀国"
+      order by fangyu limit 1,3;
+--------------------------------------------------------------------------------
+
+分页：
+    每页显示5(n)条记录，显示第4(m)页
+    第一页：
+        limit 0,5 #1 2 3 4 5
+    第二页:
+        limit 5,5 #6 7 8 9 10
+    第三页:
+        limit 10,5 #10 11 12 13 14 15
+    第四页:
+        同理
+    limit (m-1)*n,n
+
+--------------------------------------------------------------------------------
+
+聚合函数：
+    1.分类
+        avg(字段名):平均值
+        max(字段名):最大值
+        min(字段名):最小值
+        sum(字段名):求和
+        count(字段名):统计该字段记录的个数
+    2.示例：
+        1.攻击力最强值
+            select max(gongji) from sanguo;
+            (别名:select max(gongji) as zuiqiang from sanguo;)
+        2.统计一下表中id/name字段分别有多少条记录
+            select count(id),count(name) from sanguo;
+            #空值Null不会被统计
+            select count(*) from sanguo;(统计sanguo表的所有信息)
+    3.group by
+        1.作用：
+            给查询的结果进行分组
+        2.示例：
+            1.计算所有国家的平均攻击力，显示国家名和平均攻击力
+                select country,avg(gongji) from sanguo group by country;
+            先分组-再聚合-去重
+
+练习题：
+    查找所有国家中英雄数量最多的前两名，显示国家名和英雄数量
+      select country,count(name) from sanguo group by country order by count(name) DESC limit 0,2;
+--------------------------------------------------------------------------------
+3.注意：
+    1.group by 后的字段名必须要为select之后的字段名，如果select后的字段名和group by之后的字段不一致，则必须对该字段进行聚合处理(聚合函数)
+--------------------------------------------------------------------------------
+
+4.having
+
+    1.作用：
+        对查询的结果进一步筛选
+    2.示例：
+        1.找出平均攻击力大于105的国家的前两名，显示国家名称和平均攻击力。
+            select country,avg(gongji) from sanguo
+            group by country
+            having avg(gongji)>105
+            order by avg(gongji) DESC limit 2;
+    3.注意：
+        1.having语句通常和group by语句联合使用，过滤由group by语句返回的记录集
+        2.where只能操作表中实际存在的字段，having操作由聚合函数生成的显示列
+
+    4.distinct--去重
+        1.作用：不显示字段的重复值
+        2.示例：
+            sanguo表中有哪些国家
+                select distinct country from sanguo;
+            计算魏国有多少个英雄
+                select count(distinct name) from sanguo where country="魏国";
+        3.注意：
+            1.处理distinct和from之间的所有字段，所有字段值必须全部相同才可以去重
+
+--------------------------------------------------------------------------------
+
+约束：
+    1.作用：
+        保证数据完整性/一致性/有效性的规则;
+            约束分类
+                1.默认约束(default)
+                    在插入记录时，如果不给该字段赋值，则使用默认值
+                    字段名 数据类型 default 默认值;
+                2.非空约束(not null)
+                    不允许该字段值有Null记录
+                    字段名 数据类型 not null default 值;
+--------------------------------------------------------------------------------
+
+索引：
+
+    1.索引的优缺点
+        优点：
+            加快数据的检索速度
+        缺点：
+            1.当对表中数据进行增加/修改/删除时，索引需要动态维护，降低了数据的维护速度
+            2.索引需要占用物理存储空间
+--------------------------------------------------------------------------------
+DAY03笔记
+
+    接索引:
+      索引示例：
+          开启运行时间检测:set profiling=1/关闭=0;
+          执行查询语句
+              select name from 表名 where 字段名;
+          查看执行时间：
+              show profiles;
+          创建索引：
+              create index (索引名和字段名尽量一样) on 表名(字段名);
+          执行查询语句
+              select 索引名 from 表名 where 字段名=('查询内容');
+          进行时间对比:
+              show profiles;
+      索引类型：
+          1.普通索引(index)
+              规则：
+                  可设置多个字段
+                  没有约束
+                  key标志:MUL
+      创建普通索引：
+              1.创建表时
+                  index(字段名),index(字段名);
+                  示例：
+                    create table 表名(字段名1 数值类型....,index(要索引的字段名),index(要索引的字段名2));
+              2.已有表时
+                  create index 索引名 on 表名(字段名);
+              3.查看
+                  desc 表名;
+                  show index from 表名\G;(\G换行)
+              4.删除索引
+                  drop index 索引名 on 表名;
+          2.唯一索引(unique)
+                和上面一样，略
+          3.主键(primary key)
+              1.自增长属性[可有可无]
+                  1、只能有一个主键字段
+                  2、约束：不允许重复，不能为Null
+                  3、KEY标志：PRI
+                  4、通常设置记录编号字段id为主键，唯一锁定一条记录
+              2.创建：
+                  1.创建表时：
+                      id int primary key atuo_increment(自增长),字段名 数值类型;
+                  2.已有表时:
+                      alter table 表名 add primary key(字段名);
+                  3.删除
+                      1.先删除自增长属性
+                          alter table 表名 modify 字段名 int;
+                      2.删除主键
+                          alter table 表名 drop primary key;
+                  主键：primary key
+                      添加/删除:add/drop primary key...
+                      自增长:auto_increment
+                          添加、删除:modify id int;
+              指定自增长属性起始值：
+                  1.创建表
+                      create table 表名(id int primary key atuo_increment,.....)auto_increment=起始值;
+                  2.已有表：
+                      alter table 表名 auto_increment=起始值
+
+          4.外键(foreign key)
+              1.定义：当前表字段值从另一张表范围内选择
+              2.语法格式：
+                  foreign key(参考字段名)
+                  references 主表(被参考名)
+                  on delete 级联动作
+                  on update 级联动作
+              3.使用规则：
+                  1.主表、从表 字段数据类型要一致
+                  2.主表被参考字段必须是主键
+              4.示例：
+                  表1  缴费信息表
+                      学号      姓名      班级      金额
+                       1       唐伯虎   AID1805     300
+                       2       秋  香   AID1805     200
+                  表2  学生信息表
+                      学号      姓名      班级      金额
+                  表1(缴费表)
+                      create table jftab(
+                      id int primary key,
+                      name varchar(20),
+                      class char(7),
+                      money int)character set utf8;
+                      -------------------------------------
+                          insert into jftab values(1,"唐伯虎","AID1805",300),
+                          (2,"秋香","AID1805",200);
+                  表2、(bjtab)
+                      create table bjtab(stu_id int,name varchar(20),money int,foreign key(stu_id) references jftab(id) on delete cascade on update cascade)character set utf8;
+删除外键：
+    1.查看外键名：
+        show create table 表名;
+    2.删除外键关联
+        alter table 表名 drop foreign key 外键名;
+
+        级联动作：
+
+            1.cascade
+                数据级联删除、更新(参考字段)
+            2.restrict(默认)
+                从表有相关记录，不允许主表操作
+            3.set null
+                主表更新，从表相关联记录字段值自动设置为:NULL
+
+        已有表添加外键：
+
+            alter table 表名 add foreign key(参考字段名) references 主表(被参考字段)
+            on delete...
+            on update...
+-------------------------------------------------------------------------------
+
+数据导入：
+
+    1、把文件系统内容导入到数据的表中
+    2、命令格式：
+        load data infile "文件名" into table 表名 fields terminated by "分隔符(表示单元格之间的间隔)" lines terminated by '\n';
+    3、将文件导入到库中的表中
+        1.先把文件拷贝到数据库的默认搜索路径中
+            1.查看搜索路径方法
+                show variables like "secure_file_priv";
+            2.执行复制命令：
+                sudo cp /home/tarena/文件名.后缀 /var/lib/mysql-files/
+        2.创建库、表(utf8字符集)：
+            1.create database 库名 character set utf8;
+            2.use 库名;
+            3.create table score(id int,name varchar(20),score decimal(5,2),phone char(11),class char(7))character set utf8;
+        3.执行导入语句：
+            load data infile "/var/lib/mysql-feiles/文件名"
+            into table score
+            fields terminated by ","
+            lines terminated by "\n";
+        注意：
+            库、表都必须是utf8指定字符集
+            路径必须绝对路径
+
+        excel文件转为csv文件
+          打开excel文件，另存为.csv文件
+
+      数据导出：
+          1.将数据库中表记录保存到系统文件里
+          2.语法格式：
+              select ... from 表名
+              into outfile "文件名"
+              fields terminated by "分隔符"
+              lines terminated by "\n";
+          示例：
+              1.把sanguo表中的姓名、攻击值、国家三个字段导出到文件sanguo.csv中
+                  select name,gongji,country from 库名.表名
+                  into outfile '/var/lib/mysql-files/sanguo.csv'
+                  fields terminated by ","
+                  lines terminated by "\n";
+              2.把mysql库下的user表中user/host两个字段的值导出到user.txt中，字段之间用三个空格隔开
+                  select user,host from mysql.user into outfile '/var/lib/mysql-files/user.txt' fields terminated by "  " lines terminated by "\n";
+              3.注意：
+                  1.导出的内容完全由SQL查看语句决定
+                  2.路径必须制定为数据库搜索的绝对路径
+--------------------------------------------------------------------------------
+表的复制：
+
+    1.语法：
+        create table 表名 select ... from 表名;
+    2.示例：
+        复制sanguo表,sanguo2
+            create table MOSHOU.sanguo2 select * from MOSHOU.sanguo;
+        复制sanguo表的前三条记录,sanguo3
+            create table sanguo3 select * from MOSHOU.sanguo limit 3;
+        复制sanguo表的id、name和country三个字段的前五条记录，sanguo4
+            create table MOSHOU.sanguo4 select id,name,country from MOSHOU.sanguo limit 5;
+    3.只复制表结构
+        create table 表名 select * from 表名 where false;
+
+
+    4.嵌套查询
+        1.定义：
+            把内层的查询结果作为外层的查询条件
+        2.语法：
+            select ... from 表名 where 字段名 运算符(select ....);
+        3.示例：
+            1.把攻击值小于平均攻击值的名字和攻击值显示出来
+                select avg(gongji) from MOSHOU.sanguo;
+                select name,gongji from MOSHOU.sanguo where gongji<483;
+            2.找出每个国家攻击力最高的英雄名字
+                select name,gongji from sanguo where 字段名 运算符 (子查询);
+                [select name,gongji from MOSHOU.sanguo where (country,gongji)  in (select country,max(gongji) from MOSHOU.sanguo group by country);]
+--------------------------------------------------------------------------------
+
+多表查询：
+
+      1.两种方式：
+          1.select 字段名列表 from 表1,表2;(笛卡尔积)---不加where
+              ---第一张表的所有记录和第二张表第一条记录去匹配---
+          2.select 字段名列表 from 表1,表2 where 条件;
+            1.显示省、市详细信息
+                select sheng.s_name,city.c_name from sheng,city  where sheng.s_id=city.cfather_id;
+            2.显示省、市、县详细信息
+                select sheng.s_name,city.c_name,xian.x_name from sheng,city,xian  where sheng.s_id=city.cfather_id and city.c_id=xian.xfather_id;
+
+
+--------------------------------------------------------------------------------
+
+连接查询：
+
+    1.内连接
+        1.语法格式：
+            select 字段名1,字段名2 from 表1 inner join 表2 on 条件;
+        2.示例：
+            1.显示 省、市详细信息
+                select sheng.s_name,city.c_name from sheng inner join city on sheng.s_id=city.cfather_id;
+            2.显示省、市、县详细信息
+                select sheng.s_name,city.c_name,xian.x_name from sheng inner join city on sheng.s_id=city.cfather_id inner join xian on city.c_id=xian.xfather_id;
+
+    2.外连接
+      1.左连接
+          1.以左标为主，显示查询结果
+          2.语法格式：
+              select ... from 表1 left join 表2 on 条件;
+          3.显示省、市的详细信息
+              select sheng.s_name,city.c_name from sheng left join city on sheng.s_id=city.cfather_id;
+          4.显示省、市、县详细信息，要求省全部显示
+              select sheng.s_name,city.c_name,xian.x_n ame from sheng left join city on sheng.s_id=city.cfather_id left join xian on city.c_id=xian.xfather_id;
+          5.显示省、市、县详细信息，要求市全部显示
+              select sheng.s_name,city.c_name,xian.x_name from sheng right join city on sheng.s_id=city.cfather_id left join xian on city.c_id=xian.xfather_id;
+      2.右连接
+
+作业：
+    1.把/etc/passwd 文件中内容导入到db3库下的userinfo表tarena:x:1000:1000:tarena,,,:/home/tarena:/bin/bash
+    用户名:密码:UID号：用户描述：主目录：登录权限
+          CREATE TABLE 'userinfo' (
+          'u_name' varchar(40) DEFAULT NULL,
+          'passwd' varchar(2) DEFAULT NULL,
+          'uid' int(11) DEFAULT NULL,
+          'gid' int(11) DEFAULT NULL,
+          'disc' varchar(80) DEFAULT NULL,
+          'main_menu' varchar(40) DEFAULT NULL,
+          'limits' varchar(40) DEFAULT NULL
+          );
+--------------------------------------------------------------------------------
+数据备份：(mysqldump,在linux终端中操作)
+
+    1.完全备份
+        mysqldump -u用户名 -p(密码) 源库名 > 路径/xxx.sql
+        2.源库名的表示方式：
+            --all-databases 备份所有库
+            库名            备份单个库
+            -B 库1 库2..... 备份多个库
+            库名 表1 表2     备份指定表
+        3.练习：
+            备份所有库为 all.sql ,/home/tarena/mydata/
+            备份sheng、city、xian三张表 为 ？？？？.sql
+            备份两个库
+    2.增量备份
+        4.数据恢复：
+            1.命令格式
+                mysql -u用户名 -p 目标库名 < xxx.sql
+                如果恢复的库不存在则必须创建空库
+            2.恢复指定库
+                mysql -uroot -p 库名 < xxx.sql
+                单库
+                --one-database
+                    mysql -uroot -p --one-database MOSHOU < all.sql
+            注意：
+                1.恢复库时，原库中表中的记录会被覆盖，新增的表不会删除
+--------------------------------------------------------------------------------
+事务和事务回滚：
+    1.一件事从开始发生带结束的整个过程
+    2.作用：
+        确保数据一致性
+    2.事务应用：
+        开启事务
+            begin;(autocommit被禁用，sql命令不会提交到数据库执行)
+        终止
+            commit;
+            rollback;(回滚)
+    注意：
+        事务和事务回滚值针对表记录操作：增、删、改有效，对建库建表无效
+--------------------------------------------------------------------------------
+mysql的存储引擎(处理表的处理器)
+    基本操作
+        1.查看所有的存储引擎
+            show engines;
+        2.查看表存储引擎：
+            show create table 表名;
+        3.指定存储引擎
+            create table 表名(...)engine=innodb,character set utf8;
+        4.修改表存储引擎：
+            alter table 表名 engine=myisam;(不常用)
+        5.工作中常用
+            InnoDB  MyISAM
+        6.修改表默认存储引擎
+            1.sudo -i
+            2.cd /etc/mysql/mysql.conf.d/
+            3.cp mysqld.cnf mysql.cnf.rollback
+            4.ci mysql.cnf
+              [mysqld]
+              default-storage-engine=myisam
+            5./etc/init.d/mysql restart--(重启mysql服务)
+    锁：
+        1.目的：解决客户端的并发访问的冲突问题
+        2.锁的分类：
+            1.锁类型
+                读锁(select)--共享锁:加完读锁之后，其他用户只能查询，不能修改
+                写锁(增删改)--互斥锁:不能查询和修改
+            2.锁粒度
+                1.表级锁:可以加读锁和写锁
+                2.行级锁:可以加读锁和写锁
+
+--------------------------------------------------------------------------------
+存储引擎特点：
+
+    1.myisam特点
+        1.独享表空间
+            表名.frm   bi结构
+            表名.myd   表激励
+            表名.myi   索引文件
+        2.只支持表级锁
+    2.InnoDB特点：
+        1.共享表空间
+            表名.frm表结构和索引信息
+            表名.ibd表记录
+        2.支持行级锁
+    3.memory
+        表结构存储在硬盘里，表记录存储在内存中
+        服务重启后  表结构还在  表结构消失
+    4.如何决定表使用什么存储引擎
+        1.主要用来查询的表用:MyISAM
+        2.写操作的表用:InnoDB
+--------------------------------------------------------------------------------
+MySQL调优：
+
+    1.选择合适的存储引擎
+    2.创建索引
+        在select、where等常用到的字段建立索引
+    3.sql语句的优化
+        1.where条件判断  尽量不使用!=,否则放弃索引全表扫描
+        2.尽量避免使用null判断
+          优化前：
+              select id from t1 where id is null;
+          优化后:在id字段设置默认值为0，确保id字段没有Null值
+              select id from t1 where id=0;
+        3.尽量避免用or来连接条件，否则放弃索引全表扫描
+          优化前：
+              select id from t1 where id=10 or id=20;
+          优化后:
+              select id from t1 where id=10 union all select id from t1 where id=20;
+        4.模糊查询尽量避免使用前置%,否则放弃索引全表扫描
+              select name from t1 where name like "%c%";
+        5.尽量避免使用in 和 not in，否则放弃索引全表扫描
+          优化前：
+              select id from t1 where id in(1,2,3,4);
+          优化后：
+              select idn from t1 where id between 1 and 4;(判断条件需要连续)
+        6.尽量避免使用*，用具体的字段代替*，不要返回用不到的任何字段
+          优化前：
+              select * from 表名;
+          优化后：
+              select 字段名 from 表名;
+与python交互：
+
+    1.交互类型：
+        python3:pymysql
+        $sudo pip3 install pymysql
+    2.connect对象
+        conn=pymysql.connect(参数列表)
+        参数列表：
+            1.host:主机地址
+            2.port：端口
+            3.db：数据库名
+            4.passwd：密码
+            5.charset:编码方式，推荐使用utf8
+    示例：
+        conn=pymysql.connect(host="localhost",user="root",passwd="123456",db="db4,charset="utf8")
+例：
+    class Hello:
+        def __init__(self,....):
+            ...
+2.连接对象(conn)的方法：
+    close()  关闭连接
+    commit() 提交到数据库执行
+    rollback() 回滚
+    cursor()  创建游标对象，用于执行sql语句
+  游标对象：
+      1.作用：
+          执行sql语句
+      2.示例：
+          cur=conn.cursor()
+          cur.execute('delete from sheng;')
+      3.pymysql使用流程
+          1.建立数据库连接conn
+          2.创建游标对象 cur = conn.cursor()
+          3.cur.execute('delete from sheng;')
+          4.提交：conn.commit()
+          5.关闭游标：cur.close()
+          6.断开连接：conn.close()
+
+常用方法：
+    1.execute(SQL命令) 执行SQL命令
+    2.fetchone()  获取结果集第一条记录
+    3.fetchmany(n)   获取n条记录
+    4.fetchall()  获取所有全部记录
+--------------------------------------------------------------------------------
+ER模型(entry-relationship):
+    1.定义：
+        实体-关系模型，用于数据库设计
+    2.三个概念
+        1.实体：矩形框
+        2.属性：椭圆形
+        3.关系：实体之间的关系
+            1.一对一关系(1:1)：
+            2.一对多(1:n):
+            3.多对多(m:n):
